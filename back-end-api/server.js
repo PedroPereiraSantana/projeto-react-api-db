@@ -1,8 +1,10 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import cors from 'cors'
 
 const app = express();
 const prisma = new PrismaClient();
+app.use(cors()) // habilita CORS
 
 app.use(express.json());
 
@@ -33,7 +35,7 @@ app.get('/usuarios', async (req, res) => {
 });
 
 app.put('/usuarios/:id', async (req, res) => {
-
+  try{
     await prisma.user.update({
         where: {
             id: req.params.id
@@ -45,6 +47,9 @@ app.put('/usuarios/:id', async (req, res) => {
           age: req.body.age
         }
     })
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar usuários.', details: error.message });
+  }
 })
 
 app.delete('/usuarios/:id', async (req, res) => {
